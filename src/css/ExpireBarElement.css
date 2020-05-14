@@ -1,0 +1,23 @@
+.selected {
+    color: teal;
+    width: 110%;
+    height: 40px;
+    border-right: 3px solid teal;
+    font-size: 18px;
+    margin-top: 5px;
+    background-color:rgba(58, 52, 52, 0.5);
+}
+
+.element {
+    color: #ffffff;
+    width: 110%;
+    height: 40px;
+    font-size: 18px;
+    margin-top: 5px;
+}
+
+.content {
+    position: relative;
+    top: 8px;
+    left:4px;
+}

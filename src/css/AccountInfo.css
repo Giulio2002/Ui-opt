@@ -1,0 +1,11 @@
+.info-container {
+    border-radius: 10px;
+    border: 2px solid #1F618D;
+    padding: 5px; 
+    width: 350px;
+    height: 30px;
+    text-align: center;
+    background-color: #212529;
+    color: #D0D3D4;
+    font-size: 20px;
+}

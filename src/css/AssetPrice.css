@@ -1,0 +1,14 @@
+.asset_price_container {
+    color: #ffffff;
+    width: 105px;
+    height: 50px;
+    border-top: 2px solid teal;
+    text-align: right;
+}
+
+.name {
+    color: teal;
+}
+.price {
+    font-size: 15px;
+}

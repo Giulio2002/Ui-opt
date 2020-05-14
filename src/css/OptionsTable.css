@@ -1,0 +1,23 @@
+
+.separator {
+    height: 66px
+}
+.options_table_container {
+    padding-left: 150px;
+    overflow-y: scroll;
+    height: calc(100vh - 70px);
+
+}
+
+.options_table_container::-webkit-scrollbar {
+    display: none;
+}
+
+.options_table_container {
+    -ms-overflow-style: none;
+}
+@media (max-width: 767.5px) {
+    .options_table_container {
+        padding-left: 0;
+    }
+}

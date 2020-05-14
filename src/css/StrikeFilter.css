@@ -1,0 +1,14 @@
+select {
+    background-color: #343a40;
+    color: #ffffff;
+    border: 2px solid gray;
+    font-size: 20px!important;
+    width: 130px;
+    padding-left: 15px;
+
+}
+
+option {
+    font-size: 15px;
+    font-weight: 200;
+}

@@ -1,0 +1,12 @@
+.topbar {
+    height: 70px;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+}
+
+.logo {
+    width: 120px;
+    height: 35px;
+}
