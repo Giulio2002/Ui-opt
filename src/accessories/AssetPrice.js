@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import dai from '../assets/dai_icon.png';
 import '../css/AssetPrice.css'
 export default class AssetPrice extends Component {
     state = {
