@@ -1,16 +1,26 @@
 import React, {Component} from 'react';
+import dai from '../assets/dai_icon.png';
 import '../css/AssetPrice.css'
 export default class AssetPrice extends Component {
+    state = {
+        price: 0
+    }
+
     constructor(props) {
         super(props);
-        this.price = 235.23
+    }
+
+    updatePrice(price) {
+        this.setState({price: price.toFixed(2)})
     }
 
     render() {
         return (
             <div className="asset_price_container">
-                <img src = {this.props.icon}></img>
-                <text className="name">{this.props.name} </text> <center className="price">{this.price} DAI</center>
+                <center>
+                    <img src = {this.props.icon}></img>
+                    <text className="price">{this.state.price} DAI </text>
+                </center>
             </div>
         );
       }

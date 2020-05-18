@@ -1,14 +1,7 @@
-select {
-    background-color: #343a40;
-    color: #ffffff;
-    border: 2px solid gray;
-    font-size: 20px!important;
-    width: 130px;
-    padding-left: 15px;
-
-}
-
-option {
-    font-size: 15px;
-    font-weight: 200;
+.filter {
+    width:  280px;
+    margin-left: 17px;
+    height: 40px;
+    border: 0.9px solid gray;
+    margin-top:3px
 }

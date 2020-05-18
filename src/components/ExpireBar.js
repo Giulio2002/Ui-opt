@@ -32,7 +32,7 @@ export default class ExpireBar extends Component {
                     return (
                         <Nav.Item>
                             <Nav.Link eventKey={index.toString()}>
-                                <ExpireBarElement text={elem.text} ref={this.members[index]} selected = {this.selected == index}/>
+                                <ExpireBarElement text={elem.text} ref={this.members[index]} selected = {this.selected === index}/>
                             </Nav.Link>
                         </Nav.Item>               
                     );

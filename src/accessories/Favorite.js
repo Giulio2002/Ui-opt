@@ -16,7 +16,7 @@ export default class Favorite extends Component {
 
     render() {
         return (
-            <div className = {this.state.enabled? 'star-active' : 'star-active'}></div>
+            <div className = {this.state.enabled? 'star' : 'star'}></div>
         );
       }
 }

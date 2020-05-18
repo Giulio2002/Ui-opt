@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Table} from 'react-bootstrap';
-import StrikeFilter from "../accessories/StrikeFilter"
 import Favorite from "../accessories/Favorite"
 import '../css/OptionsTable.css'
 
@@ -20,7 +19,7 @@ export default class OptionsTable extends Component {
         <Table striped bordered hover variant="dark">
             <thead>
                 <tr>
-                <th>Strike <StrikeFilter/></th>
+                <th>Strike</th>
                 <th>Ask</th>
                 <th>Item</th>
                 <th>Total Ask</th>

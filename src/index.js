@@ -4,8 +4,14 @@ import TopBar from './components/TopBar';
 import ExpireBar from './components/ExpireBar';
 import OptionsTable from './components/OptionsTable';
 import * as serviceWorker from './serviceWorker';
+import MetamaskService from './services/MetamaskService'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/index.css'
+import EventEmitter from 'eventemitter3';
+
+window.EventEmitter = new EventEmitter();
+
+const metamaskService = new MetamaskService();
 const elements = [
   {
     text: "10/11/2020"
@@ -32,7 +38,7 @@ const elements = [
 
 ReactDOM.render(
   <React.StrictMode>
-    <TopBar/>
+    <TopBar metamaskService={metamaskService}/>
     <ExpireBar elements = {elements}/>     
     <OptionsTable default={elements[0]}/>
   </React.StrictMode>,

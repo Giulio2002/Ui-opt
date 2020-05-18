@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {InputGroup, Button, FormControl} from 'react-bootstrap';
 import '../css/StrikeFilter.css'
 
 export default class StrikeFilter extends Component {
@@ -12,12 +13,17 @@ export default class StrikeFilter extends Component {
 
     render() {
         return (
-            
-            <select onChange={() => console.log('hi') /*this.props.filterChange*/}>
-                <option>No Filter</option>
-                <option>300 DAI</option>
-                <option>400 DAI</option>
-            </select>
+            <div className="filter">
+            <InputGroup className="mb-3">
+                <FormControl
+                    placeholder="Minimun Strike (in DAI)"
+                    variant="dark"
+                />
+                <InputGroup.Append>
+                    <Button variant="dark" className="bordered">Search</Button>
+                </InputGroup.Append>
+            </InputGroup>
+            </div>
         );
       }
 }

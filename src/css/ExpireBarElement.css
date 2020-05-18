@@ -21,3 +21,9 @@
     top: 8px;
     left:4px;
 }
+
+.content:hover {
+    color: gray;
+    width: 110%;
+    font-size: 18px;
+}
