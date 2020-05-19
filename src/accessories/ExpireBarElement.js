@@ -3,24 +3,24 @@ import '../css/ExpireBarElement.css'
 
 export default class ExpireBarElement extends Component {
     state = {
-        className: "element"
+        className: "element block"
     }
     
     constructor(props) {
         super(props);
         if (this.props.selected) {
-            this.state.className = "selected"
+            this.state.className = "selected block"
         }
     }
 
     setSelected(select) {
         if (select) {
             this.setState(
-                {className: "selected"}
+                {className: "selected block"}
             );
         } else {
             this.setState(
-                {className: "element"}
+                {className: "element block"}
             );
         }
     }

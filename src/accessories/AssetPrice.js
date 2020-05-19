@@ -16,10 +16,8 @@ export default class AssetPrice extends Component {
     render() {
         return (
             <div className="asset_price_container">
-                <center>
-                    <img src = {this.props.icon}></img>
+                    <img src = {this.props.icon} className="icon"></img>
                     <text className="price">{this.state.price} DAI </text>
-                </center>
             </div>
         );
       }

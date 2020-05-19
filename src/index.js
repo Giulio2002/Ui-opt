@@ -8,31 +8,18 @@ import MetamaskService from './services/MetamaskService'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/index.css'
 import EventEmitter from 'eventemitter3';
+import config from './config'
 
 window.EventEmitter = new EventEmitter();
 
 const metamaskService = new MetamaskService();
 const elements = [
-  {
-    text: "10/11/2020"
-  },
-  {
-    text: "11/11/2020"
-  },
-  {
-    text: "12/11/2020"
-  },
-  {
-    text: "01/12/2020"
-  },
-  {
-    text: "02/12/2020"
-  },
-  {
-    text: "My Positions"
-  },
+  ...config.dates,
   {
     text: "Favorites"
+  },
+  {
+    text: "Sell"
   }
 ]
 

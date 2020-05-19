@@ -16,14 +16,15 @@
     margin-top: 5px;
 }
 
-.content {
+text {
     position: relative;
     top: 8px;
     left:4px;
 }
 
-.content:hover {
+.block:hover text{
     color: gray;
-    width: 110%;
-    font-size: 18px;
+    position: relative;
+    top: 8px;
+    left:4px;
 }

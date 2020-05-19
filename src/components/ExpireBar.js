@@ -13,6 +13,11 @@ export default class ExpireBar extends Component {
 
     onSelect(key) {
         let keyN = parseInt(key);
+        if (this.props.elements[key].text === "Sell") {
+            // Open Sell Dialog
+            return;
+        }
+
         this.members[this.selected].current.setSelected(false);
         this.members[keyN].current.setSelected(true);
         this.selected = keyN;

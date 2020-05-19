@@ -6,7 +6,7 @@ import '../css/OptionsTable.css'
 export default class OptionsTable extends Component {
     constructor(props) {
       super(props)
-      this.ah = new Array(50).fill(null).map(()=> ({'lock':1000, 'ask': 10000, 'strike': 90000, until: "2 days"}))
+      this.ah = new Array(1).fill(null).map(()=> ({'lock':1000, 'ask': 10000, 'strike': 90000, until: "2 days"}))
       this.expiration = this.props.default.text;
       document.body.style.backgroundColor = "#343a40"
     }

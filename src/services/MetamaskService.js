@@ -1,12 +1,16 @@
 import { ethers } from 'ethers';
 // Handle Metamask interactions
 class MetamaskService {
-  async connect() {
-    this.provider = new ethers.providers.Web3Provider(window.ethereum);
-    await window.ethereum.enable();
-    this.account = await this.getAccount();
-    setInterval(this.listenAccChange.bind(this), 300);
-    window.EventEmitter.emit('acc', [this.account])
+  async connect(failCallback) {
+    try {
+      this.provider = new ethers.providers.Web3Provider(window.ethereum);
+      await window.ethereum.enable();
+      this.account = await this.getAccount();
+      setInterval(this.listenAccChange.bind(this), 300);
+      window.EventEmitter.emit('acc', [this.account])
+    } catch(e) {
+      failCallback()
+    }
   }
 
   getProvider() {
