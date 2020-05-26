@@ -2,6 +2,7 @@
     position: relative;
     
     display: inline-block;
+    cursor: pointer;
     width: 0;
     height: 0;
     
@@ -79,6 +80,7 @@
 }
 
 .star-active {
+    cursor: pointer;
     position: relative;
     
     display: inline-block;

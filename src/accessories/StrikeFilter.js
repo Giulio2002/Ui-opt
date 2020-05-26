@@ -3,7 +3,7 @@ import {InputGroup, Button, FormControl} from 'react-bootstrap';
 import '../css/StrikeFilter.css'
 
 export default class StrikeFilter extends Component {
-    state = {
+/*    state = {
         
     }
     
@@ -25,5 +25,8 @@ export default class StrikeFilter extends Component {
             </InputGroup>
             </div>
         );
+      }*/
+      render() {
+          return(<></>);
       }
 }

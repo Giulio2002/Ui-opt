@@ -45,7 +45,8 @@ export default class TopBar extends Component {
     }
 
     async priceUpdate() {
-      const res = await fetch('https://cors-anywhere.herokuapp.com/https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1027&convert=USD', {
+      try {
+        const res = await fetch('https://cors-anywhere.herokuapp.com/https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1027&convert=USD', {
           headers: {
               'X-CMC_PRO_API_KEY': config.API_KEY
           }
@@ -54,6 +55,9 @@ export default class TopBar extends Component {
       const data = await res.json();
       const price = data.data[1027].quote.USD.price
       this.ethAssetPrice.current.updatePrice(price)
+      } catch(e) {
+        console.warn("marketcap is not")
+      }
     }
 
     onHideFailModal() {

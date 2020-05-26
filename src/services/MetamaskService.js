@@ -25,6 +25,10 @@ class MetamaskService {
     return accounts[0];
   }
 
+  address() {
+    return this.account;
+  }
+
   async listenAccChange() {
     const acc = await this.getAccount();
     if (acc != null && acc != this.account) {
