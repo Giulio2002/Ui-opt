@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Table} from 'react-bootstrap';
 import Favorite from "../accessories/Favorite"
+import BuyModal from "../accessories/BuyModal"
 import '../css/OptionsTable.css'
 import config from '../config'
 import {getUsable} from '../http'
@@ -9,6 +10,7 @@ export default class OptionsTable extends Component {
     state = {
       ah: [],
       currentExpire: 0,
+      showBuyModal: false
     }
     constructor(props) {
       super(props)
@@ -78,6 +80,41 @@ export default class OptionsTable extends Component {
       })      
     }
 
+    onHideBuyModal() {
+      this.setState({
+        ah: this.state.ah,
+        currentExpire: this.state.currentExpire,
+        showBuyModal: false
+      })
+    }
+
+    onClick(option) {
+      console.log(option)
+      this.setState({
+        ah: this.state.ah,
+        currentExpire: this.state.currentExpire,
+        showBuyModal: true,
+        option
+      })
+    }
+
+    onBuy() {
+
+    }
+
+    renderModal() {
+      if (this.state.option && this.address) {
+        return BuyModal(
+          this.onBuy.bind(this),
+          this.onHideBuyModal.bind(this),
+          this.state.showBuyModal,
+          this.state.option,
+          this.expiration
+        )
+      } else {
+        return (<></>)
+      }
+    }
     render() {
         return (
         <div>
@@ -97,7 +134,7 @@ export default class OptionsTable extends Component {
             </thead>
             <tbody>
             {this.state.ah.map(e => {
-              return <tr>
+              return <tr onClick={this.onClick.bind(this, e)}>
                 <td>
                   {(e.price_out/e.lock).toFixed(0)} DAI
                 </td>
@@ -112,6 +149,7 @@ export default class OptionsTable extends Component {
             </tbody>
         </Table>
         </div>
+        {this.renderModal()}
         </div>
         );
       }

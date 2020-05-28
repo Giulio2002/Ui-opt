@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {Modal, Image, Button} from 'react-bootstrap';
-import '../css/ModalFail.css'
+import React from 'react';
+import {Modal, Button} from 'react-bootstrap';
+import '../css/Modal.css'
 
 export default function(props) {
     return (
@@ -9,7 +9,7 @@ export default function(props) {
         className="m"
         aria-labelledby="example-custom-modal-styling-title"
       >
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
             {props.h}
           </Modal.Title>

@@ -2,12 +2,15 @@ import React, {Component} from 'react';
 import {Nav} from "react-bootstrap";
 import ExpireBarElement from "../accessories/ExpireBarElement"
 import ModalFail from "../accessories/ModalFail"
+import SellModal from '../accessories/SellModal'
 import '../css/ExpireBar.css';
 
 export default class ExpireBar extends Component {
     state = {
-        showFailModal: false
+        showFailModal: false,
+        showSellModal:false
     }
+
     constructor(props) {
         super(props);
         this.members = [];
@@ -16,20 +19,35 @@ export default class ExpireBar extends Component {
         this.selected = 0;
     }
 
-    onHideFailModal() {
-        this.setState({showFailModal: false})
+    onHideModals() {
+        this.setState({
+            showFailModal: false,
+            showSellModal: false
+        })
     }
 
     onSelect(key) {
         let keyN = parseInt(key);
         if (this.props.elements[key].text === "Sell") {
-            this.setState({showFailModal: true})
-            // Open Sell Dialog
+            if (!this.metamaskService.address()) {
+                this.setState({
+                    showFailModal: true,
+                    showSellModal: false
+                })
+                return;
+            }
+            this.setState({
+                showFailModal: false,
+                showSellModal: true
+            })            // Open Sell Dialog
             return;
         }
         if (this.props.elements[key].text === "My Positions") {
             if (!this.metamaskService.address()) {
-                this.setState({showFailModal: true})
+                this.setState({
+                    showFailModal: true,
+                    showSellModal: false
+                })
                 return;
             }
             this.members[this.selected].current.setSelected(false);
@@ -41,7 +59,10 @@ export default class ExpireBar extends Component {
 
         if (this.props.elements[key].text === "Past Positions") {
             if (!this.metamaskService.address()) {
-                this.setState({showFailModal: true})
+                this.setState({
+                    showFailModal: true,
+                    showSellModal: false
+                })
                 return;
             }
             this.members[this.selected].current.setSelected(false);
@@ -53,7 +74,10 @@ export default class ExpireBar extends Component {
 
         if (this.props.elements[key].text === "Favorites") {
             if (!this.metamaskService.address()) {
-                this.setState({showFailModal: true})
+                this.setState({
+                    showFailModal: true,
+                    showSellModal: false
+                })
                 return;
             }
             this.members[this.selected].current.setSelected(false);
@@ -97,8 +121,12 @@ export default class ExpireBar extends Component {
             h="Cannot access to this section" 
             b="In order to access this section, access to Metamask."
             show={this.state.showFailModal} 
-            onHide={this.onHideFailModal.bind(this)} 
-            ></ModalFail>
+            onHide={this.onHideModals.bind(this)} 
+            />
+            <SellModal 
+            show={this.state.showSellModal}
+            onHide={this.onHideModals.bind(this)} 
+            />
         </>
         );
       }

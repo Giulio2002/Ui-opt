@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import {Table} from 'react-bootstrap';
 import Favorite from "../accessories/Favorite"
+import BuyModal from "../accessories/BuyModal"
 import '../css/OptionsTable.css'
 import TimeTable from '../timeDict'
 import {getOption} from '../http'
 
 export default class FavTable extends Component {
     state = {
-      ah: []
+      ah: [],
+      showBuyModal: false
     }
 
     constructor(props) {
@@ -90,6 +92,42 @@ export default class FavTable extends Component {
         })
     }
 
+    onHideBuyModal() {
+      this.setState({
+        ah: this.state.ah,
+        currentExpire: this.state.currentExpire,
+        showBuyModal: false
+      })
+    }
+
+    onClick(option) {
+      console.log(option)
+      this.setState({
+        ah: this.state.ah,
+        currentExpire: this.state.currentExpire,
+        showBuyModal: true,
+        option
+      })
+    }
+
+    onBuy() {
+
+    }
+
+    renderModal() {
+      if (this.state.option && this.state.option.status === 'Avaible') {
+        return BuyModal(
+          this.onBuy.bind(this),
+          this.onHideBuyModal.bind(this),
+          this.state.showBuyModal,
+          this.state.option,
+          this.state.option.expire
+        )
+      } else {
+        return (<></>)
+      }
+    }
+
     render() {
         return (
         <div>
@@ -110,7 +148,7 @@ export default class FavTable extends Component {
             </thead>
             <tbody>
             {this.state.ah.map(e => {
-              return <tr>
+              return <tr onClick={this.onClick.bind(this, e)}>
                 <td>
                   {(e.price_out/e.lock).toFixed(0)} DAI
                 </td>
@@ -126,6 +164,7 @@ export default class FavTable extends Component {
             </tbody>
         </Table>
         </div>
+        {this.renderModal()}
         </div>
         );
       }

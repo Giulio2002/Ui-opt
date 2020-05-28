@@ -1,6 +1,6 @@
 import React from 'react';
 import {Modal, Button} from 'react-bootstrap';
-import '../css/ModalFail.css'
+import '../css/Modal.css'
 
 export default function(onGo, onHide, show, option) {
     return (
@@ -10,7 +10,7 @@ export default function(onGo, onHide, show, option) {
         className="m"
         aria-labelledby="example-custom-modal-styling-title"
       >
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
             Strike Option
           </Modal.Title>
@@ -25,6 +25,9 @@ export default function(onGo, onHide, show, option) {
             Total Strike price = {option.price_out} DAI
           <Button variant="success" onClick={onGo}>
             Strike
+          </Button>
+          <Button variant="info" onClick={onHide}>
+            Cancel
           </Button>
         </Modal.Footer>
       </Modal>

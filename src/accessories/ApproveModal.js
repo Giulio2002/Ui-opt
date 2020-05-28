@@ -1,6 +1,6 @@
 import React from 'react';
 import {Modal, Button} from 'react-bootstrap';
-import '../css/ModalFail.css'
+import '../css/Modal.css'
 
 export default function(props) {
     return (

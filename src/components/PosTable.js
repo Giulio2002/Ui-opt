@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Table, Button} from 'react-bootstrap';
 import TimeTable from "../timeDict"
+import ClaimModal from '../accessories/ClaimModal'
+import RetireModal from '../accessories/RetireModal'
 import '../css/OptionsTable.css'
 import '../css/PosTable.css'
 import {getPresent, getPast} from '../http'
@@ -8,6 +10,7 @@ import {getPresent, getPast} from '../http'
 export default class PosTable extends Component {
     state = {
       ah: [],
+      showModal: false
     }
 
     constructor(props) {
@@ -116,11 +119,58 @@ export default class PosTable extends Component {
 
     }
 
-    manipulator(status)  {
-      if (status === "On Sale")
-        return (<Button className = "optbutton" variant="outline-danger" onClick={this.onRetire.bind(this)}>Retire</Button>)
-      else if (status === "Purchased")
-        return (<Button className = "optbutton" variant="outline-success" onClick={this.onClaim.bind(this)}>Claim</Button>)
+    onHideModal() {
+      this.setState({
+        ah: this.state.ah,
+        currentExpire: this.state.currentExpire,
+        showModal: false
+      })
+    }
+
+    onRetireClick(option) {
+      this.setState({
+        ah: this.state.ah,
+        currentExpire: this.state.currentExpire,
+        showModal: true,
+        option,
+        type: 1
+      })
+    }
+
+    onClaimClick(option) {
+      this.setState({
+        ah: this.state.ah,
+        currentExpire: this.state.currentExpire,
+        showModal: true,
+        option,
+        type: 2
+      })
+    }
+
+    renderModal() {
+      console.log(this.state)
+      if (this.state.type === 1) {
+        return RetireModal(
+          this.onRetire.bind(this),
+          this.onHideModal.bind(this),
+          this.state.showModal,
+          this.state.option,
+        )
+      } else if (this.state.type === 2) {
+        return ClaimModal(
+          this.onClaim.bind(this),
+          this.onHideModal.bind(this),
+          this.state.showModal,
+          this.state.option,
+        )      
+      }
+    }
+
+    manipulator(pos)  {
+      if (pos.status === "On Sale")
+        return (<Button className = "optbutton" variant="outline-danger" onClick={this.onRetireClick.bind(this, pos)}>Retire</Button>)
+      else if (pos.status === "Purchased")
+        return (<Button className = "optbutton" variant="outline-success" onClick={this.onClaimClick.bind(this, pos)}>Claim</Button>)
     }
 
     positionToColor(pos) {
@@ -161,12 +211,13 @@ export default class PosTable extends Component {
                 <td>{e.until}</td>
                 <td>{e.expire}</td>
                 <td>{e.status}</td>
-                <td className={this.positionToColor(e.position)}>{e.position} {this.manipulator(e.status)}</td>
+                <td className={this.positionToColor(e.position)}>{e.position} {this.manipulator(e)}</td>
               </tr>;
             })}
             </tbody>
         </Table>
         </div>
+        {this.renderModal()}
         </div>
         );
       }
