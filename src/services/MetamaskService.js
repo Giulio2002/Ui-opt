@@ -1,12 +1,28 @@
 import { ethers } from 'ethers';
+import config from '../config'
+const Pivot = require('../abi/NativePivot.json')
+const ERC20 = require('../abi/ERC20.json')
+
 // Handle Metamask interactions
 class MetamaskService {
+  expectedId = 3
+
   async connect(failCallback) {
     try {
+      
       this.provider = new ethers.providers.Web3Provider(window.ethereum);
       await window.ethereum.enable();
+      const network = await this.provider.getNetwork()
+      if (network.chainId !== this.expectedId) {
+        throw 'Invalid Network: Please select Ropsten'
+      }
       this.account = await this.getAccount();
-      setInterval(this.listenAccChange.bind(this), 300);
+      if ( !localStorage.getItem('favorites-' + this.account) ) {
+          localStorage.setItem('favorites-' + this.address, '[]')
+      }
+      this.pivot = new ethers.Contract(config.PIVOT_ADDRESS, Pivot.abi, this.provider.getSigner(0)) 
+      this.token = new ethers.Contract(config.TOKEN_ADDRESS, ERC20.abi, this.provider.getSigner(0)) 
+      setInterval(this.listenAccChange.bind(this), 700);
       window.EventEmitter.emit('acc', [this.account])
     } catch(e) {
       failCallback()
@@ -30,11 +46,33 @@ class MetamaskService {
   }
 
   async listenAccChange() {
+    this.provider = new ethers.providers.Web3Provider(window.ethereum);
     const acc = await this.getAccount();
+    const network = await this.provider.getNetwork()
+    if (network.chainId !== this.expectedId) {
+      window.location.reload()
+    }
     if (acc != null && acc != this.account) {
       this.account = acc;
+      this.pivot = new ethers.Contract(config.PIVOT_ADDRESS, Pivot.abi, this.provider.getSigner(0)) 
       window.EventEmitter.emit('acc', [acc])
     }
+  }
+
+  getPivot() {
+    return this.pivot;
+  }
+
+  getToken() {
+    return this.token
+  }
+
+  getBalance() {
+    return this.provider.getBalance(this.address())
+  }
+
+  getTokenBalance() {
+    return this.token.balanceOf(this.address())
   }
 }
 

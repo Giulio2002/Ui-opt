@@ -2,6 +2,22 @@ import React from 'react';
 import {Modal, Button} from 'react-bootstrap';
 import '../css/Modal.css'
 
+function btn(loading, onApprove) {
+  if (loading) {
+    return(
+    <Button variant="success" disabled>
+      Loading...
+    </Button>
+    )
+  } else {
+    return (          
+    <Button variant="success" onClick={onApprove}>
+      Enable DAI
+    </Button>
+    )
+  }
+}
+
 export default function(props) {
     return (
       <Modal
@@ -20,9 +36,7 @@ export default function(props) {
             requirement to use this DAPP</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" onClick={props.onApprove}>
-            Enable DAI
-          </Button>
+          {btn(props.loading, props.onApprove)}
         </Modal.Footer>
       </Modal>
     );

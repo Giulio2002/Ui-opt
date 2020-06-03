@@ -1,6 +1,16 @@
 import config from './config'
+
 const fetch = require('node-fetch')
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  
+async function waitUntil(fn, time) {
+    while (!await fn()) {
+        await sleep(time)
+    }
+}
 export const getUsable = async (address, currExpire) => {
     let res
     if (address) {
@@ -34,4 +44,37 @@ export const getPresent = async (address) => {
 export const getOption = async (id) => {
     let res = await fetch(config.PIVOT_API + '/id/' + id)
     return res.json()
+}
+
+export const untilJoin = async (id) => {
+    await waitUntil(async () => {
+        try {
+            const option = await getOption(id)
+            return option.status
+        } catch(e) {
+            return false
+        }
+      }, 2000)
+}
+
+export const untilBuy = async (id) => {
+    await waitUntil(async () => {
+        const option = await getOption(id)
+        return option.status === "Purchased"
+      }, 600)
+}
+
+export const untilClaim = async (id) => {
+    await waitUntil(async () => {
+        const option = await getOption(id)
+        console.log(option)
+        return option.status === "Claimed"
+      }, 600)
+}
+
+export const untilRetire = async (id) => {
+    await waitUntil(async () => {
+        const option = await getOption(id)
+        return option.status === "Retired"
+      }, 600)
 }

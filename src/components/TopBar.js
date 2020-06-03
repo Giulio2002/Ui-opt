@@ -26,7 +26,7 @@ export default class TopBar extends Component {
 
     componentDidMount() {
       setTimeout(this.priceUpdate.bind(this), 200)
-      setInterval(this.priceUpdate.bind(this), 15000)
+      setInterval(this.priceUpdate.bind(this), 30000)
       window.EventEmitter.on('acc', this.onAccountChange.bind(this))
     }
 
@@ -100,9 +100,9 @@ export default class TopBar extends Component {
           <ModalFail
             show={this.state.showModal} 
             onHide={this.onHideFailModal.bind(this)} 
-            h="Error while connecting to Metamask"
-            b="There seems to be an error while connecting to your wallet!"
-          />          
+            h="Error while connecting to Metamask!"
+            b="There seems to be an error with Connecting to your ropsten wallet! Be sure to have selected Ropsten as your network."
+          />       
         </>
         )
       else 
@@ -132,8 +132,8 @@ export default class TopBar extends Component {
           <ModalFail
             show={this.state.showModal} 
             onHide={this.onHideFailModal.bind(this)} 
-            h="Error while connecting to Metamask"
-            b="There seems to be an error with Connecting to your wallet!"
+            h="Error while connecting to Metamask!"
+            b="There seems to be an error with Connecting to your ropsten wallet! Be sure to have selected Ropsten as your network."
           />
           </>
       )

@@ -2,10 +2,45 @@ import React from 'react';
 import {Modal, Button} from 'react-bootstrap';
 import '../css/Modal.css'
 
-export default function(onGo, onHide, show, option, expire) {
+function renderButtons(loading, onGo, onHide, tokenBalance, price_in) {
+  if (loading) {
+    return (
+    <>       
+      <Button variant="success" disabled>
+        Loading...
+      </Button>
+      <Button variant="info" disabled>
+        Cancel
+      </Button>
+    </>
+  )
+  } else if(tokenBalance < price_in + 1) {
+    return (
+    <>       
+    <Button variant="success" disabled>
+      Not Enough DAI
+    </Button>
+    <Button variant="info" onClick={onHide}>
+      Cancel
+    </Button>
+  </>)
+  } else {
+    return (
+      <>       
+        <Button variant="success" onClick={onGo}>
+          Buy
+        </Button>
+        <Button variant="info" onClick={onHide}>
+          Cancel
+        </Button>
+      </>
+    )
+  }
+
+}
+export default function(onGo, onHide, show, option, expire, loading, tokenBalance) {
     return (
       <Modal
-        onHide={onHide}
         show={show}
         className="m"
       >
@@ -27,12 +62,7 @@ export default function(onGo, onHide, show, option, expire) {
         </Modal.Body>
         <Modal.Footer>
             Total Buy price = {option.price_in + 1} DAI
-          <Button variant="success" onClick={onGo}>
-            Buy
-          </Button>
-          <Button variant="info" onClick={onHide}>
-            Cancel
-          </Button>
+          {renderButtons(loading, onGo, onHide, tokenBalance, option.price_in)}
         </Modal.Footer>
       </Modal>
     );

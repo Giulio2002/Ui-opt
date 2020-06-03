@@ -1,14 +1,60 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {Modal, Button} from 'react-bootstrap';
 import '../css/Modal.css'
 
-export default function(onGo, onHide, show, option) {
+function renderButtons(loading, onGo, onHide) {
+  if (loading) {
+    return (
+    <>       
+      <Button variant="success" disabled>
+        Loading...
+      </Button>
+      <Button variant="info" disabled>
+        Cancel
+      </Button>
+    </>
+  )
+  } else {
+    return (
+      <>       
+        <Button variant="success" onClick={onGo}>
+          Retire
+        </Button>
+        <Button variant="info" onClick={onHide}>
+          Cancel
+        </Button>
+      </>
+    )
+  }
+
+}
+export default class RetireModal extends Component {
+  state={}
+  constructor(props) {
+    super(props)
+    this.onGo = this.props.onGo
+    this.onHide = this.props.onHide
+    this.setState({
+      show: this.props.show,
+      loading: this.props.loading,
+    })
+  }
+
+  componentWillReceiveProps(props) {
+    console.log(props)
+    this.onGO = props.onGo
+    this.onHide = props.onHide
+    this.setState({
+      show: props.show,
+      loading: props.loading,
+    })
+  }
+
+  render ()  {
     return (
       <Modal
-        onHide={onHide}
-        show={show}
+        show={this.state.show}
         className="m"
-        aria-labelledby="example-custom-modal-styling-title"
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -16,22 +62,14 @@ export default function(onGo, onHide, show, option) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <p>Strike: {(option.price_out/option.lock).toFixed(0)} DAI</p> 
-            <p>Ask: {(option.price_in/option.lock).toFixed(0)} DAI</p>
-            <p>Total Ask: {option.price_in} DAI</p>
-            <p>Total Strike: {option.price_out} DAI</p>
-            <p>Amount: {option.lock} ETH</p>
-            <p>Expiration date: {option.expire}</p>
+          Are you sure you want to retire this option? You will get a refund of the funds
+          you provided and the option will be not visible to others.
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" onClick={onGo}>
-            Retire
-          </Button>
-          <Button variant="info" onClick={onHide}>
-            Cancel
-          </Button>
+          {renderButtons(this.state.loading, this.onGo, this.onHide)}
         </Modal.Footer>
       </Modal>
     );
   }
+}
   

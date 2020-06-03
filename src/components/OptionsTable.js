@@ -1,23 +1,26 @@
-import React, {Component} from 'react';
-import {Table} from 'react-bootstrap';
+import React, {Component} from 'react'
+import {Table} from 'react-bootstrap'
+import process from '../process'
 import Favorite from "../accessories/Favorite"
 import BuyModal from "../accessories/BuyModal"
 import '../css/OptionsTable.css'
 import config from '../config'
-import {getUsable} from '../http'
+import {getUsable, untilBuy} from '../http'
+import {ethers} from 'ethers'
 
 export default class OptionsTable extends Component {
     state = {
       ah: [],
       currentExpire: 0,
-      showBuyModal: false
+      showBuyModal: false,
+      isBuying: false
     }
     constructor(props) {
       super(props)
       this.expiration = this.props.default.text;
-      document.body.style.backgroundColor = "#343a40"
       this.state.currentExpire = config.dates[0].stamp
       this.address = this.props.address
+      this.metamaskService = this.props.metamaskService
     }
 
     componentDidMount() {
@@ -25,48 +28,23 @@ export default class OptionsTable extends Component {
       setTimeout(this.update.bind(this), 30000)
       window.EventEmitter.on('acc', this.onAccountChange.bind(this))
       window.EventEmitter.on('expire', this.onDifferentExpire.bind(this))
-    }
-
-    process(rawAh) {
-      const timestamp = Math.floor(Date.now() / 1000)
-      return rawAh.map(option => {
-        option.lock = parseInt(option.lock, 10);
-        option.lock = (option.lock / 10**18).toFixed(0) // What lock is
-        option.price_in = (parseInt(option.price_in, 10) / 10**18).toFixed(0);
-        option.price_out = (parseInt(option.price_out, 10) / 10**18).toFixed(0);
-
-        const until = parseInt(option.until, 10)
-        let delta = Math.abs(until - timestamp);
-        // days
-        const days = Math.floor(delta / 86400);
-        delta -= days * 86400;
-
-        // hours
-        const hours = Math.floor(delta / 3600) % 24;
-        delta -= hours * 3600;
-
-        // calculate (and subtract) whole minutes
-        const minutes = Math.floor(delta / 60) % 60;
-        if (minutes === 0 && hours === 0 && days === 0)
-          minutes = 1
-        option.until = `${days} days, ${hours} hours, ${minutes} minutes`
-        return option
-      })
+      window.EventEmitter.on('update', this.update.bind(this))
     }
 
     async update() {
-      const ah = await getUsable(this.address, this.state.currentExpire);
+      const ah = process(await getUsable(this.address, this.state.currentExpire), this.address);
       this.setState({
-        ah: this.process(ah),
+        ah,
         currentExpire: this.state.currentExpire
       })
     }
 
     async onAccountChange(acc) {
-      const ah = await getUsable(acc[0], this.state.currentExpire);
       this.address = acc[0]
+      const ah = process(await getUsable(this.address, this.state.currentExpire), this.address);
+      console.log(await getUsable(acc[0], this.state.currentExpire))
       this.setState({
-        ah: this.process(ah),
+        ah,
         currentExpire: this.state.currentExpire
       })
     }
@@ -75,9 +53,9 @@ export default class OptionsTable extends Component {
       const ah = await getUsable(this.address, expire.stamp);
       this.expiration = expire.text;
       this.setState({
-        ah: this.process(ah),
+        ah: process(ah),
         currentExpire: expire.stamp
-      })      
+      }) 
     }
 
     onHideBuyModal() {
@@ -88,8 +66,12 @@ export default class OptionsTable extends Component {
       })
     }
 
-    onClick(option) {
-      console.log(option)
+    async onClick(option) {
+      if (!this.address) {
+        return
+      }
+      const rawBalance = await this.metamaskService.getTokenBalance();
+      this.tokenBalance = parseFloat(ethers.utils.formatEther(rawBalance))   
       this.setState({
         ah: this.state.ah,
         currentExpire: this.state.currentExpire,
@@ -98,8 +80,38 @@ export default class OptionsTable extends Component {
       })
     }
 
-    onBuy() {
-
+    async onBuy() {
+      try {
+        this.setState({
+          isBuying: true
+        })
+        const pivot = this.metamaskService.getPivot();
+        const tx = await pivot.buy(
+            this.state.option.id,
+            {
+                gasLimit: 200000,
+                gasPrice: 1000000000,
+            }
+        )
+        await tx.wait()
+        await untilBuy(this.state.option.id)
+        this.update();
+        const favs = JSON.parse(localStorage.getItem('favorites-' + this.address))
+        localStorage.setItem('favorites-' + this.address, JSON.stringify(
+          favs.filter((e) => {
+            return e !== this.state.option.id
+          })
+        ))
+        this.setState({
+          isBuying: false,
+          showBuyModal: false
+        })
+      } catch (e) {
+        console.log(e)
+        this.setState({
+          isBuying: false
+        })
+      }
     }
 
     renderModal() {
@@ -109,7 +121,9 @@ export default class OptionsTable extends Component {
           this.onHideBuyModal.bind(this),
           this.state.showBuyModal,
           this.state.option,
-          this.expiration
+          this.expiration,
+          this.state.isBuying,
+          this.tokenBalance
         )
       } else {
         return (<></>)
@@ -120,7 +134,7 @@ export default class OptionsTable extends Component {
         <div>
         <div className = "separator"/>
         <div className="options_table_container">
-        <Table striped bordered hover variant="dark">
+        <Table striped bordered hover>
             <thead>
                 <tr>
                 <th>Strike</th>
@@ -134,15 +148,15 @@ export default class OptionsTable extends Component {
             </thead>
             <tbody>
             {this.state.ah.map(e => {
-              return <tr onClick={this.onClick.bind(this, e)}>
-                <td>
+              return <tr>
+                <td onClick={this.onClick.bind(this, e)} className="e">
                   {(e.price_out/e.lock).toFixed(0)} DAI
                 </td>
-                <td>{(e.price_in/e.lock).toFixed(0)} DAI</td>
-                <td>{e.lock} ETH</td>
-                <td>{e.price_in} DAI</td>
-                <td>{e.price_out} DAI</td>
-                <td>{e.until}</td>
+                <td onClick={this.onClick.bind(this, e)} className="e">{(e.price_in/e.lock).toFixed(0)} DAI</td>
+                <td onClick={this.onClick.bind(this, e)} className="e">{e.lock} ETH</td>
+                <td onClick={this.onClick.bind(this, e)} className="e">{e.price_in} DAI</td>
+                <td onClick={this.onClick.bind(this, e)} className="e">{e.price_out} DAI</td>
+                <td onClick={this.onClick.bind(this, e)} className="e">{e.until}</td>
                 <td>{this.expiration} <Favorite address={this.address} id={e.id}/> </td>
               </tr>;
             })}

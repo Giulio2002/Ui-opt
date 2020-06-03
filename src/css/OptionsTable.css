@@ -6,7 +6,6 @@
     padding-left: 150px;
     overflow-y: scroll;
     height: calc(100vh - 70px);
-
 }
 
 .options_table_container::-webkit-scrollbar {
@@ -20,4 +19,8 @@
     .options_table_container {
         padding-left: 0;
     }
+}
+
+.e {
+    cursor: pointer;
 }

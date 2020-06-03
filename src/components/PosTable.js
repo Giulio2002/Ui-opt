@@ -1,169 +1,155 @@
 import React, {Component} from 'react';
 import {Table, Button} from 'react-bootstrap';
-import TimeTable from "../timeDict"
+import process from '../process'
 import ClaimModal from '../accessories/ClaimModal'
 import RetireModal from '../accessories/RetireModal'
 import '../css/OptionsTable.css'
 import '../css/PosTable.css'
-import {getPresent, getPast} from '../http'
+import {getPresent, getPast, untilRetire, untilClaim} from '../http'
 
 export default class PosTable extends Component {
     state = {
       ah: [],
-      showModal: false
     }
 
     constructor(props) {
       super(props)
       this.present = this.props.present
-      console.log(this.present)
       this.address = this.props.address
+      this.metamaskService = this.props.metamaskService
     }
 
     async componentDidMount() {
-      let rawAh
       if (this.present) {
-        rawAh = await getPresent(this.address)
+        const raw = await getPresent(this.address)
+        this.setState({
+          ah: process(raw, this.address),
+        })
       } else {
-        rawAh = await getPast(this.address)
+        this.setState({
+          ah: process(await getPast(this.address), this.address),
+        })      
       }
-      this.setState({
-        ah: this.process(rawAh),
-      })
+
       window.EventEmitter.on('acc', this.onAccountChange.bind(this))
+      window.EventEmitter.on('update', this.update.bind(this))
     }
 
     async componentWillReceiveProps(props) {
       this.present = props.present
-      let rawAh
       if (this.present) {
-        rawAh = await getPresent(this.address)
+        this.setState({
+          ah: process(await getPresent(this.address), this.address),
+        })
       } else {
-        rawAh = await getPast(this.address)
+        this.setState({
+          ah: process(await getPast(this.address), this.address),
+        })      
       }
-      this.setState({
-        ah: this.process(rawAh),
-      })
     }
 
-    process(rawAh) {
-      console.log(rawAh)
-      const timestamp = Math.floor(Date.now() / 1000)
-      console.log(rawAh)
-      return rawAh.map(option => {
-        option.lock = parseInt(option.lock, 10);
-        option.lock = (option.lock / 10**18).toFixed(0) // What lock is
-        option.price_in = (parseInt(option.price_in, 10) / 10**18).toFixed(0);
-        option.price_out = (parseInt(option.price_out, 10) / 10**18).toFixed(0);
-
-        const until = parseInt(option.until, 10)
-        const s = option.status
-
-        if (option.origin === this.address) {
-          option.position = "Sell"
-        } else {
-          option.position = "Buy"
-        }
-
-        if (option.status === "Avaible")  {
-            option.status = "On Sale"
-        } else if (option.status === "Expired") {
-          option.status = "Expired and Returned"
-        } else if (option.status === "Purchased" && option.position === "Sell") {
-          option.status = "Sold and Pending"
-        }
-
-        option.expire = TimeTable[option.expire]
-        if (s !== "Avaible" && s !== "Purchased") {
-          option.until = "Terminated"
-          return option
-        }
-
-        let delta = Math.abs(until - timestamp);
-        // days
-        const days = Math.floor(delta / 86400);
-        delta -= days * 86400;
-
-        // hours
-        const hours = Math.floor(delta / 3600) % 24;
-        delta -= hours * 3600;
-
-        // calculate (and subtract) whole minutes
-        const minutes = Math.floor(delta / 60) % 60;
-        if (minutes === 0 && hours === 0 && days === 0)
-          minutes = 1
-        option.until = `${days} days, ${hours} hours, ${minutes} minutes`
-        
-        return option
-      })
+    async update() {
+      if (this.present) {
+        this.setState({
+          ah: process(await getPresent(this.address), this.address),
+        })
+      } else {
+        this.setState({
+          ah: process(await getPast(this.address), this.address),
+        })      
+      }
     }
 
     async onAccountChange(acc) {
       this.address = acc[0]
-      let rawAh
       if (this.present) {
-        rawAh = await getPresent(this.address)
+        this.setState({
+          ah: process(await getPresent(this.address), this.address),
+        })
       } else {
-        rawAh = await getPast(this.address)
-      }      
-      this.setState({
-        ah: this.process(rawAh),
-      })
+        this.setState({
+          ah: process(await getPast(this.address), this.address),
+        })      
+      }
     }
 
-    onClaim() {
-
+    async onClaim() {
+      try {
+        this.setState({
+          loading: true,
+        })
+        const pivot = this.metamaskService.getPivot();
+        const tx = await pivot.claim(
+            this.state.option.id,
+            {
+                gasLimit: 200000,
+                gasPrice: 1000000000,
+            }
+        )
+        await tx.wait()
+        await untilClaim(this.state.option.id)
+        
+        this.setState({
+          ah: process(await getPresent(this.address), this.address),
+          loading: false,
+          type: 0
+        })
+      } catch (e) {
+        this.setState({
+          loading: false
+        })
+      }
     }
 
-    onRetire() {
-
+    async onRetire() {
+      try {
+        this.setState({
+          loading: true,
+        })
+        const pivot = this.metamaskService.getPivot();
+        const tx = await pivot.exit(
+            this.state.option.id,
+            {
+                gasLimit: 200000,
+                gasPrice: 1000000000,
+            }
+        )
+        await tx.wait()
+        await untilRetire(this.state.option.id)
+        
+        this.setState({
+          ah: process(await getPresent(this.address), this.address),
+          loading: false,
+          type: 0
+        })
+      } catch (e) {
+        this.setState({
+          loading: false
+        })
+      }
     }
 
     onHideModal() {
       this.setState({
         ah: this.state.ah,
         currentExpire: this.state.currentExpire,
-        showModal: false
+        type: 0
       })
     }
 
     onRetireClick(option) {
       this.setState({
-        ah: this.state.ah,
-        currentExpire: this.state.currentExpire,
-        showModal: true,
         option,
         type: 1
       })
     }
 
-    onClaimClick(option) {
+    async onClaimClick(option) {
+      this.tokenBalance = await this.metamaskService.getTokenBalance()
       this.setState({
-        ah: this.state.ah,
-        currentExpire: this.state.currentExpire,
-        showModal: true,
         option,
         type: 2
       })
-    }
-
-    renderModal() {
-      console.log(this.state)
-      if (this.state.type === 1) {
-        return RetireModal(
-          this.onRetire.bind(this),
-          this.onHideModal.bind(this),
-          this.state.showModal,
-          this.state.option,
-        )
-      } else if (this.state.type === 2) {
-        return ClaimModal(
-          this.onClaim.bind(this),
-          this.onHideModal.bind(this),
-          this.state.showModal,
-          this.state.option,
-        )      
-      }
     }
 
     manipulator(pos)  {
@@ -184,7 +170,7 @@ export default class PosTable extends Component {
         <div>
         <div className = "separator"/>
         <div className="options_table_container">
-        <Table striped bordered hover variant="dark" responsive="xl">
+        <Table striped bordered hover responsive="xl">
             <thead>
                 <tr>
                 <th>Strike</th>
@@ -217,7 +203,21 @@ export default class PosTable extends Component {
             </tbody>
         </Table>
         </div>
-        {this.renderModal()}
+        <ClaimModal
+        onGo={this.onClaim.bind(this)}
+        onHide={this.onHideModal.bind(this)}
+        show={this.state.type === 2}
+        loading={this.state.loading}
+        tokenBalance={this.tokenBalance}
+        option={this.state.option}
+        />
+
+        <RetireModal
+        onGo={this.onRetire.bind(this)}
+        onHide={this.onHideModal.bind(this)}
+        show={this.state.type === 1}
+        loading={this.state.loading}
+        />
         </div>
         );
       }

@@ -50,6 +50,10 @@ export default class ExpireBar extends Component {
                 })
                 return;
             }
+            this.setState({
+                showFailModal: false,
+                showSellModal: false
+            })
             this.members[this.selected].current.setSelected(false);
             this.members[keyN].current.setSelected(true);
             this.selected = keyN;
@@ -65,6 +69,10 @@ export default class ExpireBar extends Component {
                 })
                 return;
             }
+            this.setState({
+                showFailModal: false,
+                showSellModal: false
+            })
             this.members[this.selected].current.setSelected(false);
             this.members[keyN].current.setSelected(true);
             this.selected = keyN;
@@ -80,6 +88,10 @@ export default class ExpireBar extends Component {
                 })
                 return;
             }
+            this.setState({
+                showFailModal: false,
+                showSellModal: false
+            })
             this.members[this.selected].current.setSelected(false);
             this.members[keyN].current.setSelected(true);
             this.selected = keyN;
@@ -93,6 +105,10 @@ export default class ExpireBar extends Component {
         this.selected = keyN;
         window.EventEmitter.emit('expire', this.props.elements[key])
         window.EventEmitter.emit('category', 'market')
+    }
+
+    onSell() {
+
     }
 
     render() {
@@ -121,11 +137,13 @@ export default class ExpireBar extends Component {
             h="Cannot access to this section" 
             b="In order to access this section, access to Metamask."
             show={this.state.showFailModal} 
-            onHide={this.onHideModals.bind(this)} 
+            onHide={this.onHideModals.bind(this)}
+            metamaskService={this.metamaskService}
             />
             <SellModal 
             show={this.state.showSellModal}
-            onHide={this.onHideModals.bind(this)} 
+            onHide={this.onHideModals.bind(this)}
+            metamaskService={this.metamaskService} 
             />
         </>
         );
