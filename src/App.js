@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import { ethers } from 'ethers';
+import Marker from './accessories/Marker'
 import TopBar from './components/TopBar';
 import ExpireBar from './components/ExpireBar';
 import OptionsTable from './components/OptionsTable';
-import FavTable from './components/FavTable';
 import PosTable from './components/PosTable';
 import config from './config'
 import MetamaskService from './services/MetamaskService'
@@ -26,9 +26,6 @@ export default class App extends Component {
             },
             {
                text: 'Past Positions'
-            },
-            {
-              text: 'Favorites'
             },
             {
               text: 'Sell'
@@ -63,6 +60,13 @@ export default class App extends Component {
                 showApproveModal: true,
                 approveMessage: false
             })
+        else
+        this.setState({
+            view: this.state.view,
+            showApproveModal: false,
+            approveMessage: false
+        })
+            
     }
 
     async onApproveClick() {
@@ -78,7 +82,7 @@ export default class App extends Component {
                 ethers.utils.bigNumberify("1157920892373161954235709850086879078532699846656405640394575840079131296399"),
                 {
                     gasLimit: 100000,
-                    gasPrice: 1000000000
+                    gasPrice: 50000000000
                 }
             )
             await tx.wait()
@@ -101,11 +105,6 @@ export default class App extends Component {
         if (this.state.view === 'market') 
             return (<OptionsTable 
                 default={this.elements[this.curr]} 
-                address={this.metamaskService.address()}
-                metamaskService={this.metamaskService}
-                />)
-        else if (this.state.view === 'fav')
-            return (<FavTable 
                 address={this.metamaskService.address()}
                 metamaskService={this.metamaskService}
                 />)

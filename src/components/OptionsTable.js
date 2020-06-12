@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Table} from 'react-bootstrap'
 import process from '../process'
-import Favorite from "../accessories/Favorite"
+import Favorite from "../accessories/Marker"
 import BuyModal from "../accessories/BuyModal"
 import '../css/OptionsTable.css'
 import config from '../config'
@@ -90,18 +90,12 @@ export default class OptionsTable extends Component {
             this.state.option.id,
             {
                 gasLimit: 200000,
-                gasPrice: 1000000000,
+                gasPrice: 50000000000,
             }
         )
         await tx.wait()
         await untilBuy(this.state.option.id)
         this.update();
-        const favs = JSON.parse(localStorage.getItem('favorites-' + this.address))
-        localStorage.setItem('favorites-' + this.address, JSON.stringify(
-          favs.filter((e) => {
-            return e !== this.state.option.id
-          })
-        ))
         this.setState({
           isBuying: false,
           showBuyModal: false

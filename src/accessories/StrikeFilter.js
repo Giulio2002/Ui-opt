@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {InputGroup, Button, FormControl} from 'react-bootstrap';
+// import {InputGroup, Button, FormControl} from 'react-bootstrap';
 import '../css/StrikeFilter.css'
 
 export default class StrikeFilter extends Component {

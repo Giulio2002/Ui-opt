@@ -79,6 +79,7 @@ export default class TopBar extends Component {
           <Navbar bg="dark" variant="topbar" fixed="top">
             <Navbar.Brand>
               <img
+                alt=""
                 src={logo}
                 className="d-inline-block align-top logo"
               />
@@ -111,6 +112,7 @@ export default class TopBar extends Component {
           <Navbar bg="dark" variant="topbar" fixed="top">
             <Navbar.Brand>
               <img
+                alt=""
                 src={logo}
                 className="d-inline-block align-top logo"
               />

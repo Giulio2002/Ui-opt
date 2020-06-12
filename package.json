@@ -9,6 +9,8 @@
     "async-wait-until": "^1.2.4",
     "bootstrap": "^4.4.1",
     "dotenv": "^8.2.0",
+    "eth-block-tracker": "^4.4.3",
+    "eth-gas-price-suggestor": "^1.0.2",
     "ethereum-blockies-base64": "^1.0.2",
     "ethers": "^4.0.47",
     "jazzicon": "^1.5.0",

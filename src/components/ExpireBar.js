@@ -8,7 +8,7 @@ import '../css/ExpireBar.css';
 export default class ExpireBar extends Component {
     state = {
         showFailModal: false,
-        showSellModal:false
+        showSellModal: false
     }
 
     constructor(props) {
@@ -80,35 +80,11 @@ export default class ExpireBar extends Component {
             return
         }
 
-        if (this.props.elements[key].text === "Favorites") {
-            if (!this.metamaskService.address()) {
-                this.setState({
-                    showFailModal: true,
-                    showSellModal: false
-                })
-                return;
-            }
-            this.setState({
-                showFailModal: false,
-                showSellModal: false
-            })
-            this.members[this.selected].current.setSelected(false);
-            this.members[keyN].current.setSelected(true);
-            this.selected = keyN;
-            window.EventEmitter.emit('category', 'fav')
-            return
-        }
-
-
         this.members[this.selected].current.setSelected(false);
         this.members[keyN].current.setSelected(true);
         this.selected = keyN;
         window.EventEmitter.emit('expire', this.props.elements[key])
         window.EventEmitter.emit('category', 'market')
-    }
-
-    onSell() {
-
     }
 
     render() {

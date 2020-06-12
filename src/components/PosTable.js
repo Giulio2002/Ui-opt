@@ -83,7 +83,7 @@ export default class PosTable extends Component {
             this.state.option.id,
             {
                 gasLimit: 200000,
-                gasPrice: 1000000000,
+                gasPrice: 50000000000,
             }
         )
         await tx.wait()
@@ -111,7 +111,7 @@ export default class PosTable extends Component {
             this.state.option.id,
             {
                 gasLimit: 200000,
-                gasPrice: 1000000000,
+                gasPrice: 50000000000,
             }
         )
         await tx.wait()

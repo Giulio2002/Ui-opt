@@ -1,21 +1,22 @@
 import TimeTable from './timeDict'
 import {ethers} from 'ethers'
+
 export default (rawAh, address) => {
     const timestamp = Math.floor(Date.now() / 1000)
     rawAh = rawAh.filter((option) => {
-      return option.price_in.length > 15
+      return option.price_in.length > 18
     })
     rawAh = rawAh.filter((option) => {
-      return option.price_out.length > 15
+      return option.price_out.length > 18
+    })
+    rawAh = rawAh.filter((option) => {
+      return option.lock.length > 15
     })
     return rawAh.map(option => {
       option.lock = parseFloat(ethers.utils.formatEther(option.lock));
-      option.price_in = parseInt(option.price_in, 10) / 10**18
-      option.price_out = parseInt(option.price_out, 10) / 10**18
+      option.price_in = Math.round(parseInt(option.price_in, 10) / 10**18)
+      option.price_out = Math.round(parseInt(option.price_out, 10) / 10**18)
       option.price_in = Math.round(option.price_in * 1000) / 1000
-      if (option.price_in === 0 || option.price_in === 0) {
-        return
-      }
       const until = parseInt(option.until, 10)
       const s = option.status
 
@@ -49,7 +50,7 @@ export default (rawAh, address) => {
       delta -= hours * 3600;
 
       // calculate (and subtract) whole minutes
-      const minutes = Math.floor(delta / 60) % 60;
+      let minutes = Math.floor(delta / 60) % 60;
       if (minutes === 0 && hours === 0 && days === 0)
         minutes = 1
       option.until = `${days} days, ${hours} hours, ${minutes} minutes`

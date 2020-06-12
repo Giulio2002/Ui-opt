@@ -17,9 +17,6 @@ class MetamaskService {
         throw 'Invalid Network: Please select Ropsten'
       }
       this.account = await this.getAccount();
-      if ( !localStorage.getItem('favorites-' + this.account) ) {
-          localStorage.setItem('favorites-' + this.address, '[]')
-      }
       this.pivot = new ethers.Contract(config.PIVOT_ADDRESS, Pivot.abi, this.provider.getSigner(0)) 
       this.token = new ethers.Contract(config.TOKEN_ADDRESS, ERC20.abi, this.provider.getSigner(0)) 
       setInterval(this.listenAccChange.bind(this), 700);
@@ -52,7 +49,7 @@ class MetamaskService {
     if (network.chainId !== this.expectedId) {
       window.location.reload()
     }
-    if (acc != null && acc != this.account) {
+    if (acc !== null && acc !== this.account) {
       this.account = acc;
       this.pivot = new ethers.Contract(config.PIVOT_ADDRESS, Pivot.abi, this.provider.getSigner(0)) 
       window.EventEmitter.emit('acc', [acc])

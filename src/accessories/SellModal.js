@@ -52,7 +52,7 @@ export default class SellModal extends Component {
 
     isValidAmount(){
         const val = this.amountRef.current.value
-        if (val.indexOf('e') != -1 || val.indexOf('E') != -1) {
+        if (val.indexOf('e') !== -1 || val.indexOf('E') !== -1) {
             this.setState({
                 show: true,
                 loading: false,
@@ -69,7 +69,7 @@ export default class SellModal extends Component {
                 amountInput: val
             })
         } else {
-            if (parseFloat(val) === 0 || isNaN(parseInt(val, 10)) || parseFloat(val) < 0.001) {
+            if (parseFloat(val) === 0 || isNaN(parseInt(val, 10)) || parseFloat(val) < 0.05) {
                 this.setState({
                     show: true,
                     loading: false,
@@ -113,7 +113,7 @@ export default class SellModal extends Component {
                 until,
                 {
                     gasLimit: 200000,
-                    gasPrice: 1000000000,
+                    gasPrice: 50000000000,
                     value: amount
                 }
             )
@@ -127,7 +127,6 @@ export default class SellModal extends Component {
                 amountInput: ''
             })
         } catch(e) {
-            console.log(e)
             this.setState({
                 show: true,
                 loading: false,
@@ -201,15 +200,12 @@ export default class SellModal extends Component {
                     value={this.state.amountInput}
                     disabled={this.state.loading}
                 />
-                <Form.Control.Feedback type="invalid">
-                  Minimun amount is 0.001 ETH!
-                </Form.Control.Feedback>
-                <Form.Control.Feedback>
-                  Looks Good!
-                </Form.Control.Feedback>
                 <Form.Text className="text-muted">
-                    <a onClick={this.onMax.bind(this)}>Max</a>
+                    <a href onClick={this.onMax.bind(this)}>Max</a>
                 </Form.Text>
+                <Form.Control.Feedback type="invalid">
+                  Minimun amount is 0.05 ETH!
+                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlSelect1">
                 <Form.Label>Select Expiration Date</Form.Label>
@@ -262,7 +258,7 @@ export default class SellModal extends Component {
                 >
                     <option value="300000000000000000000">300 DAI</option>
                     <option value="350000000000000000000">350 DAI</option>
-                    <option value="400000000000000000000">400 DAI</option>
+                    <option value="500000000000000000000">400 DAI</option>
                     <option value="450000000000000000000">450 DAI</option>
                     <option value="500000000000000000000">500 DAI</option>
                 </Form.Control>
