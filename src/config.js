@@ -1,7 +1,6 @@
 require('dotenv').config()
 
 export default {
-    API_KEY: process.env.REACT_APP_PRICE_API_KEY,
     PIVOT_API: process.env.REACT_APP_PIVOT_API,
     PIVOT_ADDRESS: process.env.REACT_APP_PIVOT_ADDRESS,
     TOKEN_ADDRESS: process.env.REACT_APP_TOKEN_ADDRESS,
@@ -26,5 +25,6 @@ export default {
             text: process.env.REACT_APP_EXPIRE5_TEXT,
             stamp: process.env.REACT_APP_EXPIRE5_TIMESTAMP
         }
-    ]
+    ],
+    strikes: [220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500]
 }

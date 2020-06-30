@@ -7,17 +7,13 @@ function sleep(ms) {
   }
   
 async function waitUntil(fn, time) {
+    await sleep(time)
     while (!await fn()) {
         await sleep(time)
     }
 }
-export const getUsable = async (address, currExpire) => {
-    let res
-    if (address) {
-        res = await fetch(config.PIVOT_API + '/usable/' + currExpire + '/' + address)
-    } else {
-        res = await fetch(config.PIVOT_API + '/expire/' + currExpire)
-    }
+export const getUsable = async (currExpire) => {
+    let res = await fetch(config.PIVOT_API + '/expire/' + currExpire)
     return res.json()
 }
 
@@ -46,6 +42,11 @@ export const getOption = async (id) => {
     return res.json()
 }
 
+export const getOptionThat = async (id, address) => {
+    let res = await fetch(config.PIVOT_API + '/search/' + id + '/' + address)
+    return res.json()
+}
+
 export const untilJoin = async (id) => {
     await waitUntil(async () => {
         try {
@@ -57,24 +58,24 @@ export const untilJoin = async (id) => {
       }, 2000)
 }
 
-export const untilBuy = async (id) => {
+export const untilBuy = async (id, address) => {
     await waitUntil(async () => {
-        const option = await getOption(id)
-        return option.status === "Purchased"
-      }, 600)
+        return true
+      }, 15000)
 }
 
 export const untilClaim = async (id) => {
     await waitUntil(async () => {
-        const option = await getOption(id)
-        console.log(option)
-        return option.status === "Claimed"
-      }, 600)
+        return true
+      }, 15000)
 }
 
 export const untilRetire = async (id) => {
     await waitUntil(async () => {
-        const option = await getOption(id)
-        return option.status === "Retired"
-      }, 600)
+        return true
+      }, 15000)
+}
+
+export const genericSleep = async () => {
+    await sleep(15000) // 15 seconds of ZzZzZ
 }

@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {Table, Button} from 'react-bootstrap';
-import process from '../process'
+import {parse} from '../process'
 import ClaimModal from '../accessories/ClaimModal'
 import RetireModal from '../accessories/RetireModal'
 import '../css/OptionsTable.css'
 import '../css/PosTable.css'
-import {getPresent, getPast, untilRetire, untilClaim} from '../http'
+import {getPresent, getPast, untilRetire, genericSleep} from '../http'
 
 export default class PosTable extends Component {
     state = {
@@ -23,11 +23,11 @@ export default class PosTable extends Component {
       if (this.present) {
         const raw = await getPresent(this.address)
         this.setState({
-          ah: process(raw, this.address),
+          ah: parse(raw, this.address, true),
         })
       } else {
         this.setState({
-          ah: process(await getPast(this.address), this.address),
+          ah: parse(await getPast(this.address), this.address, true),
         })      
       }
 
@@ -39,11 +39,11 @@ export default class PosTable extends Component {
       this.present = props.present
       if (this.present) {
         this.setState({
-          ah: process(await getPresent(this.address), this.address),
+          ah: parse(await getPresent(this.address), this.address, true),
         })
       } else {
         this.setState({
-          ah: process(await getPast(this.address), this.address),
+          ah: parse(await getPast(this.address), this.address, true),
         })      
       }
     }
@@ -51,11 +51,11 @@ export default class PosTable extends Component {
     async update() {
       if (this.present) {
         this.setState({
-          ah: process(await getPresent(this.address), this.address),
+          ah: parse(await getPresent(this.address), this.address, true),
         })
       } else {
         this.setState({
-          ah: process(await getPast(this.address), this.address),
+          ah: parse(await getPast(this.address), this.address, true),
         })      
       }
     }
@@ -64,11 +64,11 @@ export default class PosTable extends Component {
       this.address = acc[0]
       if (this.present) {
         this.setState({
-          ah: process(await getPresent(this.address), this.address),
+          ah: parse(await getPresent(this.address), this.address, true),
         })
       } else {
         this.setState({
-          ah: process(await getPast(this.address), this.address),
+          ah: parse(await getPast(this.address), this.address, true),
         })      
       }
     }
@@ -87,10 +87,10 @@ export default class PosTable extends Component {
             }
         )
         await tx.wait()
-        await untilClaim(this.state.option.id)
+        await genericSleep();
         
         this.setState({
-          ah: process(await getPresent(this.address), this.address),
+          ah: parse(await getPresent(this.address), this.address, true),
           loading: false,
           type: 0
         })
@@ -118,7 +118,7 @@ export default class PosTable extends Component {
         await untilRetire(this.state.option.id)
         
         this.setState({
-          ah: process(await getPresent(this.address), this.address),
+          ah: parse(await getPresent(this.address), this.address, true),
           loading: false,
           type: 0
         })
@@ -165,6 +165,26 @@ export default class PosTable extends Component {
       return "green"
     }
 
+    renderModal() {
+      if (this.state.type === 1) {
+        return (<RetireModal
+        onGo={this.onRetire.bind(this)}
+        onHide={this.onHideModal.bind(this)}
+        show={this.state.type === 1}
+        loading={this.state.loading}
+        />)
+        
+      } else if (this.state.type === 2) {
+        return (<ClaimModal
+        onGo={this.onClaim.bind(this)}
+        onHide={this.onHideModal.bind(this)}
+        show={this.state.type === 2}
+        loading={this.state.loading}
+        tokenBalance={this.tokenBalance}
+        option={this.state.option}
+        />)
+      }
+    }
     render() {
         return (
         <div>
@@ -176,9 +196,6 @@ export default class PosTable extends Component {
                 <th>Strike</th>
                 <th>Ask</th>
                 <th>Item</th>
-                <th>Total Ask</th>
-                <th>Total Strike</th>
-                <th>Valid For</th>
                 <th>Expiration Date</th>
                 <th>Status</th>
                 <th>Position </th>
@@ -188,13 +205,10 @@ export default class PosTable extends Component {
             {this.state.ah.map(e => {
               return <tr>
                 <td>
-                  {(e.price_out/e.lock).toFixed(0)} DAI
+                  {e.strike} DAI
                 </td>
-                <td>{(e.price_in/e.lock).toFixed(0)} DAI</td>
+                <td>{e.ask} DAI</td>
                 <td>{e.lock} ETH</td>
-                <td>{e.price_in} DAI</td>
-                <td>{e.price_out} DAI</td>
-                <td>{e.until}</td>
                 <td>{e.expire}</td>
                 <td>{e.status}</td>
                 <td className={this.positionToColor(e.position)}>{e.position} {this.manipulator(e)}</td>
@@ -203,21 +217,8 @@ export default class PosTable extends Component {
             </tbody>
         </Table>
         </div>
-        <ClaimModal
-        onGo={this.onClaim.bind(this)}
-        onHide={this.onHideModal.bind(this)}
-        show={this.state.type === 2}
-        loading={this.state.loading}
-        tokenBalance={this.tokenBalance}
-        option={this.state.option}
-        />
 
-        <RetireModal
-        onGo={this.onRetire.bind(this)}
-        onHide={this.onHideModal.bind(this)}
-        show={this.state.type === 1}
-        loading={this.state.loading}
-        />
+          {this.renderModal()}
         </div>
         );
       }

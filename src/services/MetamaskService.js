@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import config from '../config'
-const Pivot = require('../abi/NativePivot.json')
+const Pivot = require('../abi/NativePivot2.json')
 const ERC20 = require('../abi/ERC20.json')
 
 // Handle Metamask interactions
@@ -22,6 +22,7 @@ class MetamaskService {
       setInterval(this.listenAccChange.bind(this), 700);
       window.EventEmitter.emit('acc', [this.account])
     } catch(e) {
+      console.log(e)
       failCallback()
     }
   }

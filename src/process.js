@@ -1,60 +1,57 @@
 import TimeTable from './timeDict'
+import config from './config'
 import {ethers} from 'ethers'
 
-export default (rawAh, address) => {
-    const timestamp = Math.floor(Date.now() / 1000)
-    rawAh = rawAh.filter((option) => {
-      return option.price_in.length > 18
-    })
-    rawAh = rawAh.filter((option) => {
-      return option.price_out.length > 18
-    })
-    rawAh = rawAh.filter((option) => {
-      return option.lock.length > 15
-    })
-    return rawAh.map(option => {
+export function parse (rawAh, address, pos=false) {
+  return rawAh.map(option => {
+    console.log(option.lock)
+    if (!pos || option.address === option.origin)
       option.lock = parseFloat(ethers.utils.formatEther(option.lock));
-      option.price_in = Math.round(parseInt(option.price_in, 10) / 10**18)
-      option.price_out = Math.round(parseInt(option.price_out, 10) / 10**18)
-      option.price_in = Math.round(option.price_in * 1000) / 1000
-      const until = parseInt(option.until, 10)
-      const s = option.status
+    else 
+      option.lock = parseFloat(ethers.utils.formatEther(option.credit));
+    option.ask = parseInt(option.price_in, 10)
+    option.strike = parseInt(option.price_out, 10)
+    if (option.origin === address) {
+      option.position = "Sell"
+    } else {
+      option.position = "Buy"
+    }
 
-      if (option.origin === address) {
-        option.position = "Sell"
-      } else {
-        option.position = "Buy"
-      }
+    if (option.status === "Avaible")  {
+        option.status = "On Sale"
+    } else if (option.status === "Expired") {
+      option.lock = parseFloat(ethers.utils.formatEther(option.origin_lock));
+      option.status = "Expired and Returned"
+    } else if (option.status === "Purchased" && option.position === "Sell") {
+      option.status = "Sold and Pending"
+    }
 
-      if (option.status === "Avaible")  {
-          option.status = "On Sale"
-      } else if (option.status === "Expired") {
-        option.status = "Expired and Returned"
-      } else if (option.status === "Purchased" && option.position === "Sell") {
-        option.status = "Sold and Pending"
-      }
+    if (option.status === "Claimed" || option.status === "Closed" || option.status === "Retired") 
+      option.lock = parseFloat(ethers.utils.formatEther(option.origin_lock));
 
-      option.expire = TimeTable[option.expire]
-      if (s !== "Avaible") {
-        option.until = "Terminated"
-        return option
-      }
+    console.log(option.origin_lock)
+    option.expire = TimeTable[option.expire]
 
-      let delta = Math.abs(until - timestamp);
-      // days
-      const days = Math.floor(delta / 86400);
-      delta -= days * 86400;
-
-      // hours
-      const hours = Math.floor(delta / 3600) % 24;
-      delta -= hours * 3600;
-
-      // calculate (and subtract) whole minutes
-      let minutes = Math.floor(delta / 60) % 60;
-      if (minutes === 0 && hours === 0 && days === 0)
-        minutes = 1
-      option.until = `${days} days, ${hours} hours, ${minutes} minutes`
-      
-      return option
-    })
+    return option
+  })
+}
+export function process (rawAh, address) {
+  const parsedList = parse(rawAh, address)
+  const strikes = config.strikes
+  let divid = []
+  // Initialize Divid
+  strikes.forEach(() => {
+    divid.push([])
+  })
+  // Distribution
+  parsedList.forEach((e) => {
+    let posInStrikes = strikes.indexOf(parseInt(e.strike, 10))
+    if (posInStrikes === -1) return
+    divid[posInStrikes].push(e)
+  })
+  // Sorting
+  divid.forEach((_, i) => {
+    divid[i].sort((a, b) => {return a.ask-b.ask})
+  })
+  return divid
 }

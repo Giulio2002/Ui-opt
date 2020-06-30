@@ -2,14 +2,9 @@ import React, {Component} from 'react';
 import {Navbar} from 'react-bootstrap';
 import ConnectButton from '../accessories/ConnectButton'
 import EthereumIdenticon from '../accessories/EthereumIdenticon'
-import StrikeFilter from "../accessories/StrikeFilter"
-import AssetPrice from '../accessories/AssetPrice'
 import logo from '../assets/logo.png';
-import eth from '../assets/ethereum_icon.png';
 import '../css/TopBar.css'
 import ModalFail from '../accessories/ModalFail'
-import config from '../config'
-const fetch = require('node-fetch')
 
 export default class TopBar extends Component {
 
@@ -20,13 +15,10 @@ export default class TopBar extends Component {
 
     constructor(props) {
       super(props)
-      this.ethAssetPrice = React.createRef();
       this.metamaskService = this.props.metamaskService;
     }
 
     componentDidMount() {
-      setTimeout(this.priceUpdate.bind(this), 200)
-      setInterval(this.priceUpdate.bind(this), 30000)
       window.EventEmitter.on('acc', this.onAccountChange.bind(this))
     }
 
@@ -42,22 +34,6 @@ export default class TopBar extends Component {
         account: this.state.account,
         showModal: true
       })
-    }
-
-    async priceUpdate() {
-      try {
-        const res = await fetch('https://cors-anywhere.herokuapp.com/https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=1027&convert=USD', {
-          headers: {
-              'X-CMC_PRO_API_KEY': config.API_KEY
-          }
-      })
-
-      const data = await res.json();
-      const price = data.data[1027].quote.USD.price
-      this.ethAssetPrice.current.updatePrice(price)
-      } catch(e) {
-        console.warn("marketcap is not")
-      }
     }
 
     onHideFailModal() {
@@ -86,12 +62,6 @@ export default class TopBar extends Component {
             </Navbar.Brand>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                          <AssetPrice icon = {eth} name="Ethereum" ref={this.ethAssetPrice}/>
-                        </li>
-                        <li>
-                          <StrikeFilter/>
-                        </li>
                     </ul>
                 </div>
             <Navbar.Collapse className="justify-content-end">
@@ -119,12 +89,6 @@ export default class TopBar extends Component {
             </Navbar.Brand>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                          <AssetPrice icon = {eth} name="Ethereum" ref={this.ethAssetPrice}/>
-                        </li>
-                        <li>
-                          <StrikeFilter/>
-                        </li>
                     </ul>
                 </div>
             <Navbar.Collapse className="justify-content-end">

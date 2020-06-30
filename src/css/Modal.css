@@ -13,3 +13,5 @@ a {
 a:hover {
   color: grey
 }
+
+.listing-dialog {max-width: 80% !important;}

@@ -96,21 +96,19 @@ export default class SellModal extends Component {
                 amountInput: this.amountRef.current.value
             })
             const timestamp = Math.floor(Date.now() / 1000)
-            const amountInEth = parseFloat(this.amountRef.current.value)
             const amount = ethers.utils.parseEther(this.amountRef.current.value);
             const expire = parseInt(TimeTable[this.expireRef.current.value], 10)
-            const until = timestamp + parseInt(this.untilRef.current.value, 10)
-            const strike = parseInt(this.strikeRef.current.value, 10) * amountInEth
-            const ask = parseInt(this.askRef.current.value, 10) * amountInEth
+            const strike = parseInt(this.strikeRef.current.value, 10)
+            const ask = parseInt(this.askRef.current.value, 10)
             const id = ethers.utils.formatBytes32String(Math.random().toString(20).substr(2, 20))
-            
+            console.log(timestamp)
+            console.log(expire)
             const pivot = this.metamaskService.getPivot();
             const tx = await pivot.join(
                 id,
                 expire,
                 ethers.utils.bigNumberify(parseInt(ask, 10).toString()),
                 ethers.utils.bigNumberify(parseInt(strike, 10).toString()),
-                until,
                 {
                     gasLimit: 200000,
                     gasPrice: 50000000000,
@@ -121,11 +119,11 @@ export default class SellModal extends Component {
             await untilJoin(id)
             window.EventEmitter.emit('update', true)
             this.setState({
-                show: false,
                 loading: false,
                 invalidAmount: true,
                 amountInput: ''
             })
+            this.onHide()
         } catch(e) {
             this.setState({
                 show: true,
@@ -222,31 +220,17 @@ export default class SellModal extends Component {
                 </Form.Control>
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlSelect1">
-                <Form.Label>Selfdestruct Timeout</Form.Label>
-                <Form.Control 
-                    as="select"
-                    ref={this.untilRef}
-                    disabled={this.state.loading}
-                >
-                    <option value="43200">12 Hours</option>
-                    <option value="86400">1 Day</option>
-                    <option value="172800">2 Days</option>
-                    <option value="259200">3 Days</option>
-                    <option value="345600">4 Days</option>
-                </Form.Control>
-            </Form.Group>
-            <Form.Group controlId="exampleForm.ControlSelect1">
                 <Form.Label>Select Ask Price</Form.Label>
                 <Form.Control 
                 as="select" 
                 ref={this.askRef}
                 disabled={this.state.loading}
                 >
-                    <option value="50000000000000000000">50 DAI</option>
-                    <option value="100000000000000000000">100 DAI</option>
-                    <option value="150000000000000000000">150 DAI</option>
-                    <option value="200000000000000000000">200 DAI</option>
-                    <option value="250000000000000000000">250 DAI</option>
+                    <option value="50">50 DAI</option>
+                    <option value="100">100 DAI</option>
+                    <option value="150">150 DAI</option>
+                    <option value="200">200 DAI</option>
+                    <option value="250">250 DAI</option>
                 </Form.Control>
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlSelect1">
@@ -256,11 +240,11 @@ export default class SellModal extends Component {
                 ref={this.strikeRef}
                 disabled={this.state.loading}
                 >
-                    <option value="300000000000000000000">300 DAI</option>
-                    <option value="350000000000000000000">350 DAI</option>
-                    <option value="500000000000000000000">400 DAI</option>
-                    <option value="450000000000000000000">450 DAI</option>
-                    <option value="500000000000000000000">500 DAI</option>
+                    <option value="300">300 DAI</option>
+                    <option value="350">350 DAI</option>
+                    <option value="400">400 DAI</option>
+                    <option value="450">450 DAI</option>
+                    <option value="500">500 DAI</option>
                 </Form.Control>
             </Form.Group>
         </Form>

@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import {Modal, Button} from 'react-bootstrap';
+import {ethers} from 'ethers'
 import '../css/Modal.css'
 
 function renderButtons(loading, onGo, onHide, tokenBalance, price_out) {
+  console.log(tokenBalance)
+  console.log(price_out)
+  console.log(tokenBalance.gte(price_out))
   if (loading) {
     return (
     <>       
@@ -14,7 +18,7 @@ function renderButtons(loading, onGo, onHide, tokenBalance, price_out) {
       </Button>
     </>
   )
-  } else if(tokenBalance < price_out) {
+  } else if(!tokenBalance.gte(price_out)) {
     return (
     <>       
     <Button variant="success" disabled>
@@ -81,14 +85,12 @@ export default class ClaimModal extends Component {
         </Modal.Header>
         <Modal.Body>
           <div>
-            <p className="info">Strike: <span>{(this.state.option.price_out/this.state.option.lock).toFixed(0)} DAI</span></p> 
-            <p className="info">Total Strike: <span>{this.state.option.price_out}</span> DAI</p>
+            <p className="info">Strike: <span>{this.state.option.price_out} DAI</span></p> 
             <p className="info">Amount:  <span>{this.state.option.lock}</span> ETH</p>
           </div>
         </Modal.Body>
         <Modal.Footer>
-            Total Strike price = {this.state.option.price_out} DAI
-          {renderButtons(this.state.loading, this.onGo, this.onHide, this.state.tokenBalance, this.state.option.price_out)}
+          {renderButtons(this.state.loading, this.onGo, this.onHide, this.state.tokenBalance, ethers.utils.parseEther(this.state.option.price_out))}
         </Modal.Footer>
       </Modal>
     );
