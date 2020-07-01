@@ -1,68 +1,59 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Axios Specifications for UI
+Axios is meant to be a platform where user can create and trade options on the Ethereum Platform fully decentralised.
+## What is an option
+An option is a financial contract in which the writer (seller) promises that the contract buyer has the right, but not the obligation, to buy or sell a certain security at a certain price (the strike price) on or before a certain expiration date, or exercise date. The asset in the contract is referred to as the underlying asset, or simply the underlying. An option giving the buyer the right to buy at a certain price is called a call, while one that gives him/her the right to sell is called a put. In the case of Axios only call options are implemented so we will focus on those. when the expiration date is met the underlying asset is returned to the seller.
 
-## Available Scripts
+## How is an option composed in axios
+An option in axios has the following paramaters:
+ 
+* lock => underlying asset (only ETH for now)
+* ask => price at which the option is sold (in DAI)
+* strike => strike price (in DAI)
+* origin => creator of the option
+* credit => how much someone is entitled to a certain option (what fraction of an option someone bought)
+* expire => expiration date of the option
 
-In the project directory, you can run:
+## Goal
+I want a UI that makes you buy and sell options on the ethereum blockchain, that is easy to use and intuitive. I would expect a ledger of offers of options ordered by strike and expiration date. here is an example of a service that provides options: https://www.deribit.com/main#/options?tab=ETH-1JUL20.
 
-### `yarn start`
+# Axios: how to launch it
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This project is linked to three repositories:
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+* Axios-Contracts:https://github.com/Giulio2002/Contracts-Axios
+* Axios-Backend: https://github.com/Giulio2002/backend-axios
+* Ui-Opt: https://github.com/Giulio2002/Ui-opt
 
-### `yarn test`
+We need to work (in terms of UI) only on UI-Opt and Axios-Backend(only if considered necessary)
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Prerequisite
+* postgressql for backend
+* An ethereum private key (for ropsten chain), also for backend
+* Metamask
+## Starting everything
 
-### `yarn build`
+* `git clone https://github.com/Giulio2002/backend-axios`
+* `git clone https://github.com/Giulio2002/Ui-opt`
+* go to Axios-Backend with shell:
+    * `yarn`
+    * `node api.js`
+    * `node pusher.js` (in two different shells)
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* go to Ui-opt with shell:
+    * `yarn`
+    * `yarn start`
+## Explanation of components
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+* Ui-Opt
+    * User Interface
+* Axios-Backend
+    * it provides and api used by the User Interface (api.js)
+    * it provides a very little script that put the status of every user that interacted with the app into an sql database, which then are rendered to the UI via the api.(pusher.js)
+    * This part only includes two significant little scripts. they are about 100 lines of code each so you can feel free to modify it if it's required.
+* Axios-Contracts
+    * the contract you need to look into are in the V2 folder and it's 'NativePivot2.sol'. the methods are listed:
+        * `join` create an option
+        * `buy`  buy an option
+        * `exit` retire a previously created unbought option
+        * `claim`pay the strike and claim a previously bought option
+        * `back` exit the option if expiration is met.
