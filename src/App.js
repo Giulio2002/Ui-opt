@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { ethers } from 'ethers';
-import Marker from './accessories/Marker'
 import TopBar from './components/TopBar';
 import ExpireBar from './components/ExpireBar';
 import OptionsTable from './components/OptionsTable';

@@ -5,8 +5,7 @@ import BuyModal from "../accessories/BuyModal"
 import Section from "../accessories/Section"
 import '../css/OptionsTable.css'
 import config from '../config'
-import {getUsable, untilBuy} from '../http'
-import {ethers} from 'ethers'
+import {getUsable} from '../http'
 
 export default class OptionsTable extends Component {
     state = {

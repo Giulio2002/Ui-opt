@@ -7,6 +7,7 @@ class EthereumIdenticon extends Component {
 
   constructor(props) {
     super(props)
+    this.address = this.props.address
   }
 
   renderAddress(address) {
@@ -20,8 +21,8 @@ class EthereumIdenticon extends Component {
 
   render() {
     return (
-      <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={this.renderAddress(this.props.address)}>
-        <Image src={makeBlockie(this.props.address)} className="identicon"/>
+      <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={this.renderAddress(this.address)}>
+        <Image src={makeBlockie(this.address)} className="identicon"/>
       </OverlayTrigger>
     );
     }

@@ -14,7 +14,7 @@ class MetamaskService {
       await window.ethereum.enable();
       const network = await this.provider.getNetwork()
       if (network.chainId !== this.expectedId) {
-        throw 'Invalid Network: Please select Ropsten'
+        throw Error('Invalid Network: Please select Ropsten')
       }
       this.account = await this.getAccount();
       this.pivot = new ethers.Contract(config.PIVOT_ADDRESS, Pivot.abi, this.provider.getSigner(0)) 
